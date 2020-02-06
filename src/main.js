@@ -1,7 +1,7 @@
 // 导入包（包括第三方 | 自己的）
 import Vue from 'vue'
 import App from './App.vue'
-
+import axios from 'axios'
 import router from '@/router';
 
 import ElementUI from 'element-ui';
@@ -11,7 +11,7 @@ Vue.use(ElementUI);
 // false 开发环境级别的日志，日志详细
 // true 生产环境级别的日志，上线之后部署服务器之后，日志简单
 Vue.config.productionTip = false
-
+Vue.prototype.$http = axios
 // 根实例
 new Vue({
   render: h => h(App),

@@ -5,7 +5,7 @@
     <el-card class="my-card">
       <img src="../../assets/imgs/logo_index.png" alt />
       <!-- 表单 -->
-      <el-form :model="loginForm" :rules="loginRules" status-icon>
+      <el-form ref="loginForm" :model="loginForm" :rules="loginRules" status-icon>
         <el-form-item prop="mobile">
           <el-input v-model="loginForm.mobile" placeholder="请输入手机号"></el-input>
         </el-form-item>
@@ -18,7 +18,7 @@
           <el-checkbox :value="true">我已阅读并同意用户协议和隐私条款</el-checkbox>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width:100%;">登录</el-button>
+          <el-button @click="login" type="primary" style="width:100%;">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -54,6 +54,16 @@ export default {
           { len : 6, message: '验证码错误，为六位', trigger: 'blur' }
         ]
       }
+    }
+  },
+  methods:{
+    login() {
+      this.$refs.loginForm.validate((valid)=>{
+        //valid为true 校验成功  为false 校验失败
+        if(valid){
+          //TODO 进行登录
+        }
+      })
     }
   }
 };
