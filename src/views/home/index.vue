@@ -1,6 +1,46 @@
 <template>
   <el-container class="container-home">
-    <el-aside class="my-aside" width="200px">Aside</el-aside>
+    <el-aside class="my-aside" width="200px">
+      <div class="logo"></div>
+      <!-- element-ui侧边栏 -->
+      <el-menu
+        default-active="1"
+        class="el-menu-vertical-demo"
+        background-color="#fff"
+        text-color="#000"
+        active-text-color="#b52624"
+        style="border-right:none"        
+        >
+        <el-menu-item index="1">
+          <i class="el-icon-s-home"></i>
+          <span slot="title">首页</span>
+        </el-menu-item>
+        <el-menu-item index="2">
+          <i class="el-icon-document"></i>
+          <span slot="title">內容管理</span>
+        </el-menu-item>
+        <el-menu-item index="3">
+          <i class="el-icon-picture"></i>
+          <span slot="title">素材管理</span>
+        </el-menu-item>
+        <el-menu-item index="4">
+          <i class="el-icon-s-promotion"></i>
+          <span slot="title">发布文章</span>
+        </el-menu-item>
+        <el-menu-item index="5">
+          <i class="el-icon-chat-dot-round"></i>
+          <span slot="title">评论管理</span>
+        </el-menu-item>
+        <el-menu-item index="6">
+          <i class="el-icon-present"></i>
+          <span slot="title">粉丝管理</span>
+        </el-menu-item>
+        <el-menu-item index="7">
+          <i class="el-icon-setting"></i>
+          <span slot="title">个人设置</span>
+        </el-menu-item>
+      </el-menu>
+    </el-aside>
     <el-container>
       <el-header class="my-header">
         <span class="icon el-icon-s-fold"></span>
@@ -39,7 +79,16 @@ export default {
   left: 0;
   top: 0;
   .my-aside {
-    background-color: #b52624;
+    // background-color: #b52624;
+    .logo{
+      width: 100%;
+      height: 60px;
+       // background: ...    背景图定位/背景图尺寸
+      background: #002244 url(../../assets/imgs/logo_index.png) no-repeat center / 200px auto;
+    }
+    i:hover{
+      background-color: pink;
+    }
   }
   .my-header {
     border-bottom: 1px solid #000;
