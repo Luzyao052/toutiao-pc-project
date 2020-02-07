@@ -1,16 +1,18 @@
 <template>
   <el-container class="container-home">
-    <el-aside class="my-aside" width="200px">
-      <div class="logo"></div>
+    <el-aside class="my-aside" :width="isOpen? '200px':'64px'">
+      <div class="logo" :class="{minLogo:!isOpen}"></div>
       <!-- element-ui侧边栏 -->
       <el-menu
         default-active="1"
         class="el-menu-vertical-demo"
-        background-color="#fff"
+        background-color="#f0f0f0"
         text-color="#000"
         active-text-color="#b52624"
-        style="border-right:none"        
-        >
+        style="border-right:none"
+        :collapse="!isOpen"
+        :collapse-transition="false"
+      >
         <el-menu-item index="1">
           <i class="el-icon-s-home"></i>
           <span slot="title">首页</span>
@@ -43,13 +45,13 @@
     </el-aside>
     <el-container>
       <el-header class="my-header">
-        <span class="icon el-icon-s-fold"></span>
+        <span @click="toggleMenu()" class="icon el-icon-s-fold"></span>
         <span class="text">头条新闻,你感兴趣的头条</span>
         <!-- 头部下拉  element-UI -->
         <el-dropdown class="my-dropdown">
           <span class="el-dropdown-link">
             <!-- 头像 -->
-            <img class="user-img" src="../../assets/imgs/avatar.jpg" alt="">
+            <img class="user-img" src="../../assets/imgs/avatar.jpg" alt />
             <!-- 用户名称 -->
             <span class="user-name">特洛耶·希文</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
@@ -60,14 +62,27 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
-      <el-main>Main</el-main>
+      <el-main>
+        <!-- 二级路由 -->
+        <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
 
 <script>
 export default {
-  name: ""
+  name: "app-home",
+  data() {
+    return {
+      isOpen: true
+    };
+  },
+  methods: {
+    toggleMenu() {
+      this.isOpen = !this.isOpen;
+    }
+  }
 };
 </script>
 
@@ -79,19 +94,21 @@ export default {
   left: 0;
   top: 0;
   .my-aside {
-    // background-color: #b52624;
-    .logo{
+    background-color: #f0f0f0;
+    .logo {
       width: 100%;
       height: 60px;
-       // background: ...    背景图定位/背景图尺寸
-      background: #002244 url(../../assets/imgs/logo_index.png) no-repeat center / 200px auto;
+      // background: ...    背景图定位/背景图尺寸
+      background: #fff url(../../assets/imgs/logo_index.png) no-repeat center /
+        200px auto;
     }
-    i:hover{
-      background-color: pink;
+    .minLogo {
+      background-image: url(../../assets/imgs/logo_indexmin.png);
+      background-size: 45px;
     }
   }
   .my-header {
-    border-bottom: 1px solid #000;
+    border-bottom: 1px solid #f0f0f0;
     line-height: 60px;
     .icon {
       font-size: 24px;
@@ -101,14 +118,14 @@ export default {
       vertical-align: middle;
       padding-left: 15px;
     }
-    .my-dropdown{
+    .my-dropdown {
       float: right;
-      .user-img{
+      .user-img {
         width: 40px;
         height: 30px;
         vertical-align: middle;
       }
-      .user-name{
+      .user-name {
         vertical-align: middle;
         padding-left: 10px;
       }
