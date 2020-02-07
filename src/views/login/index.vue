@@ -62,6 +62,15 @@ export default {
         //valid为true 校验成功  为false 校验失败
         if(valid){
           //TODO 进行登录
+          this.$http.post(
+            'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+            this.loginForm
+          ).then(res=>{
+            this.$router.push('/')
+          }).catch(()=>{
+            //element-ui的错误提示
+            this.$message.error('手机号或验证码错误');
+          })
         }
       })
     }
