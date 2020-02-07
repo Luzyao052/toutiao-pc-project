@@ -45,7 +45,7 @@
     </el-aside>
     <el-container>
       <el-header class="my-header">
-        <span @click="toggleMenu()" class="icon el-icon-s-fold"></span>
+        <span @click="toggleMenu()" class="icon" :class="isOpen? 'el-icon-s-fold':'el-icon-s-unfold'"></span>
         <span class="text">头条新闻,你感兴趣的头条</span>
         <!-- 头部下拉  element-UI -->
         <el-dropdown class="my-dropdown">

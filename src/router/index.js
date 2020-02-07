@@ -6,6 +6,7 @@ Vue.use(VueRouter)
 import Login from '@/views/login'
 import Home from '@/views/home'
 import Welcome from '@/views/welcome'
+import NotFound from '@/views/404'
 
 export default new VueRouter({
   routes: [
@@ -16,6 +17,7 @@ export default new VueRouter({
       children: [
         {path : '/' , component : Welcome}
       ]
-    }
-  ] // 路由规则
+    },
+    { path: '*', component: NotFound }
+  ] // NotFound
 })
