@@ -27,6 +27,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   // 如果你不是登录页面，而且你没有token，拦截到登录页面
   if (to.path !== '/login' && !auth.getUser().token) return next('/login')
+  //其他情况放行
   next()
 })
 export default router

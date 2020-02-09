@@ -51,9 +51,9 @@
         <el-dropdown class="my-dropdown">
           <span class="el-dropdown-link">
             <!-- 头像 -->
-            <img class="user-img" src="../../assets/imgs/avatar.jpg" alt />
+            <img class="user-img" :src="photo" alt />
             <!-- 用户名称 -->
-            <span class="user-name">特洛耶·希文</span>
+            <span class="user-name">{{name}}</span>
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
@@ -71,12 +71,19 @@
 </template>
 
 <script>
+import auth from '@/utils/auth.js'
 export default {
   name: "app-home",
   data() {
     return {
-      isOpen: true
+      isOpen: true,
+      name : '',
+      photo : ''
     };
+  },
+  created () {
+    this.name = auth.getUser().name
+    this.photo = auth.getUser().photo
   },
   methods: {
     toggleMenu() {
