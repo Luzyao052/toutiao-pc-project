@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import auth from '@/utils/auth.js'
 export default {
   name: "app-login",
   data() {
@@ -66,6 +67,8 @@ export default {
             'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
             this.loginForm
           ).then(res=>{
+            // console.log(res.data.data);
+            auth.setUser(res.data.data)
             this.$router.push('/')
           }).catch(()=>{
             //element-ui的错误提示
