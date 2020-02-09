@@ -48,7 +48,7 @@
         <span @click="toggleMenu()" class="icon" :class="isOpen? 'el-icon-s-fold':'el-icon-s-unfold'"></span>
         <span class="text">头条新闻,你感兴趣的头条</span>
         <!-- 头部下拉  element-UI -->
-        <el-dropdown class="my-dropdown">
+        <el-dropdown class="my-dropdown" @command="handleClick">
           <span class="el-dropdown-link">
             <!-- 头像 -->
             <img class="user-img" :src="photo" alt />
@@ -57,8 +57,8 @@
             <i class="el-icon-arrow-down el-icon--right"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>个人设置</el-dropdown-item>
-            <el-dropdown-item>退出登录</el-dropdown-item>
+            <el-dropdown-item command="setting">个人设置</el-dropdown-item>
+            <el-dropdown-item command="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </el-dropdown>
       </el-header>
@@ -88,6 +88,13 @@ export default {
   methods: {
     toggleMenu() {
       this.isOpen = !this.isOpen;
+    },
+    handleClick(command) {
+      if(command === 'setting') return this.$router.push('/setting')
+      if(command === 'logout')  {
+        auth.delUser()
+        this.$router.push('/login')
+      }
     }
   }
 };
