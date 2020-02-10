@@ -67,7 +67,7 @@ export default {
             'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
             this.loginForm
           ).then(res=>{
-            // console.log(res.data.data);
+            // console.log(res.data);
             auth.setUser(res.data.data)
             this.$router.push('/')
           }).catch(()=>{

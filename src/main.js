@@ -1,7 +1,8 @@
 // 导入包（包括第三方 | 自己的）
 import Vue from 'vue'
 import App from './App.vue'
-import axios from 'axios'
+// 导入 自己配置的 axios
+import axios from '@/api'
 import router from '@/router';
 
 import ElementUI from 'element-ui';
