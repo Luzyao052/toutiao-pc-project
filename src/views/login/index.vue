@@ -10,7 +10,11 @@
           <el-input v-model="loginForm.mobile" placeholder="请输入手机号"></el-input>
         </el-form-item>
         <el-form-item prop="code">
-          <el-input v-model="loginForm.code" placeholder="请输入验证码" style="width:240px;margin-right:8px"></el-input>
+          <el-input
+            v-model="loginForm.code"
+            placeholder="请输入验证码"
+            style="width:240px;margin-right:8px"
+          ></el-input>
           <el-button>发送验证码</el-button>
         </el-form-item>
         <el-form-item>
@@ -26,56 +30,63 @@
 </template>
 
 <script>
-import auth from '@/utils/auth.js'
+import auth from "@/utils/auth.js";
 export default {
   name: "app-login",
   data() {
     const validatePass = (rule, value, callback) => {
-      if(!/^1[3-9]\d{9}$/.test(value)){
+      if (!/^1[3-9]\d{9}$/.test(value)) {
         //校验失败
-        callback(new Error('手机号格式错误'))
-      }else{
+        callback(new Error("手机号格式错误"));
+      } else {
         //校验成功
-        callback()
+        callback();
       }
-    }
-    return{
-      loginForm:{
-        mobile:'13333333333',
-        code:'246810'
+    };
+    return {
+      loginForm: {
+        mobile: "13333333333",
+        code: "246810"
       },
-      loginRules:{
-        mobile:[
+      loginRules: {
+        mobile: [
           //required 是否必写，message 提示信息，trigger 触发条件
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { validator: validatePass, trigger: 'blur' }
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          { validator: validatePass, trigger: "blur" }
         ],
-        code:[
-          { required: true, message: '请输入验证码', trigger: 'blur' },
-          { len : 6, message: '验证码错误，为六位', trigger: 'blur' }
+        code: [
+          { required: true, message: "请输入验证码", trigger: "blur" },
+          { len: 6, message: "验证码错误，为六位", trigger: "blur" }
         ]
       }
-    }
+    };
   },
-  methods:{
+  methods: {
     login() {
-      this.$refs.loginForm.validate((valid)=>{
+      this.$refs.loginForm.validate(async valid => {
         //valid为true 校验成功  为false 校验失败
-        if(valid){
+        if (valid) {
           //TODO 进行登录
-          this.$http.post(
-            'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
-            this.loginForm
-          ).then(res=>{
-            // console.log(res.data);
-            auth.setUser(res.data.data)
-            this.$router.push('/')
-          }).catch(()=>{
-            //element-ui的错误提示
-            this.$message.error('手机号或验证码错误');
-          })
+          // this.$http.post(
+          //   'http://ttapi.research.itcast.cn/mp/v1_0/authorizations',
+          //   this.loginForm
+          // ).then(res=>{
+          //   // console.log(res.data);
+          //   auth.setUser(res.data.data)
+          //   this.$router.push('/')
+          // }).catch(()=>{
+          //   //element-ui的错误提示
+          //   this.$message.error('手机号或验证码错误');
+          // })
+          try {
+            const res = await this.$http.post("authorizations", this.loginForm);
+            auth.setUser(res.data.data);
+            this.$router.push("/");
+          } catch (error) {
+            this.$message.error("手机号或验证码错误");
+          }
         }
-      })
+      });
     }
   }
 };
