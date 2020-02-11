@@ -22,9 +22,9 @@
           <el-select v-model="filterData.channel_id" placeholder="请选择">
             <el-option
               v-for="item in channelOptions"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             ></el-option>
           </el-select>
         </el-form-item>
@@ -46,11 +46,28 @@
       <div slot="header">共搜到相关文章 0 篇</div>
       <!-- 表格 -->
       <el-table :data="articles">
-        <el-table-column label="封面"></el-table-column>
-        <el-table-column label="标题"></el-table-column>
-        <el-table-column label="状态"></el-table-column>
-        <el-table-column label="发布时间"></el-table-column>
-        <el-table-column label="操作"></el-table-column>
+        <el-table-column label="封面">
+          <template slot-scope="scope">
+            <el-image style="width: 100px; height: 100px" :src="scope.row.cover.images[0]"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column prop="title" label="标题"></el-table-column>
+        <el-table-column label="状态">
+          <template slot-scope="scope">
+            <el-tag v-if="scope.row.status===0" type="info">草稿</el-tag>
+            <el-tag v-if="scope.row.status===1">待审核</el-tag>
+            <el-tag v-if="scope.row.status===2" type="success">审核通过</el-tag>
+            <el-tag v-if="scope.row.status===3" type="warning">审核失败</el-tag>
+            <el-tag v-if="scope.row.status===4" type="danger">已删除</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="pubdate" label="发布时间"></el-table-column>
+        <el-table-column label="操作">
+          <template>
+            <el-button type="primary" icon="el-icon-edit" circle></el-button>
+            <el-button type="danger" icon="el-icon-delete" circle></el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <!-- 分页 -->
       <el-pagination style="margin-top:20px" background layout="prev, pager, next" :total="1000"></el-pagination>
@@ -63,7 +80,7 @@ export default {
   name: "app-article",
   data() {
     return {
-      articles:[],
+      articles: [],
       // 声明筛选条件数据，筛选条件数据提交给后台，数据的字段名称，由后台接口决定。
       // 筛选数据是由多个表单元素组成，需要收集所有数据，应该使用对象来进行绑定
       filterData: {
@@ -71,17 +88,33 @@ export default {
         status: null,
         channel_id: null,
         begin_pubdate: null,
-        end_pubdate: null
+        end_pubdate: null,
+        page: 1,
+        per_page: 20
       },
       // 频道下拉选项数据
-      channelOptions: [
-        { label: "前端", value: 1 },
-        { label: "数据库", value: 2 }
-      ],
+      channelOptions: [],
       // 日期范围数据 [起始日期,结束日期]
       // 但是选择完成日期范围后，可以根据这个数据给 begin_pubdate end_pubdate 赋值。
       dateArr: []
     };
+  },
+  created() {
+    this.getChannelOptions(), this.getArticles();
+  },
+  methods: {
+    async getChannelOptions() {
+      const res = await this.$http.get("channels");
+      // console.log(res);
+      this.channelOptions = res.data.data.channels;
+    },
+    async getArticles() {
+      // post('地址','请求体数据')
+      // 如果是get请求，如何传递参数对象 get('地址',{params:'get对象参数'})
+      const res = await this.$http.get("articles", { params: this.filterData });
+      // console.log(res);
+      this.articles = res.data.data.results;
+    }
   }
 };
 </script>
