@@ -82,7 +82,13 @@
               icon="el-icon-edit"
               circle
             ></el-button>
-            <el-button plain type="danger" icon="el-icon-delete" circle></el-button>
+            <el-button
+              @click="delArticle(scope.row.id)"
+              plain
+              type="danger"
+              icon="el-icon-delete"
+              circle
+            ></el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -119,7 +125,7 @@ export default {
         channel_id: null,
         begin_pubdate: null,
         end_pubdate: null,
-        page: 3,
+        page: 1,
         per_page: 20
       },
       // 频道下拉选项数据
@@ -133,6 +139,24 @@ export default {
     this.getChannelOptions(), this.getArticles();
   },
   methods: {
+    // 删除
+    delArticle(id) {
+      this.$confirm("是否要删除该篇文章?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(async () => {
+          try {
+            await this.$http.delete(`articles/${id}`);
+            this.$message.success("删除成功!");
+            this.getArticles();
+          } catch (e) {
+            this.$message.error("删除失败");
+          }
+        })
+        .catch(() => {});
+    },
     // 编辑跳转
     toEditArticle(id) {
       this.$router.push(`/publish?id=${id}`);
