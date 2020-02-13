@@ -19,7 +19,12 @@
         </el-form-item>
         <el-form-item label="频道：">
           <!-- label 选项文字  value 选项的值 当你选择某个选项后，该选项的值提供v-model -->
-          <el-select v-model="filterData.channel_id" placeholder="请选择">
+          <el-select
+            clearable
+            @change="changeChannel"
+            v-model="filterData.channel_id"
+            placeholder="请选择"
+          >
             <el-option
               v-for="item in channelOptions"
               :key="item.id"
@@ -30,6 +35,8 @@
         </el-form-item>
         <el-form-item label="日期：">
           <el-date-picker
+            @change="changeDate"
+            value-format="yyyy-MM-dd"
             v-model="dateArr"
             type="daterange"
             range-separator="至"
@@ -38,17 +45,21 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">筛选</el-button>
+          <el-button type="primary" @click="search()">筛选</el-button>
         </el-form-item>
       </el-form>
     </el-card>
     <el-card style="margin-top:20px">
-      <div slot="header">共搜到相关文章 0 篇</div>
+      <div slot="header">共搜到相关文章 {{total}} 篇</div>
       <!-- 表格 -->
       <el-table :data="articles">
         <el-table-column label="封面">
           <template slot-scope="scope">
-            <el-image style="width: 100px; height: 100px" :src="scope.row.cover.images[0]"></el-image>
+            <el-image style="width: 100px; height: 100px" :src="scope.row.cover.images[0]">
+              <div slot="error" class="image-slot">
+                <img src="../../assets/imgs/error.gif" style="width: 100px; height: 100px" />
+              </div>
+            </el-image>
           </template>
         </el-table-column>
         <el-table-column prop="title" label="标题"></el-table-column>
@@ -62,15 +73,27 @@
           </template>
         </el-table-column>
         <el-table-column prop="pubdate" label="发布时间"></el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="120px">
           <template>
-            <el-button type="primary" icon="el-icon-edit" circle></el-button>
-            <el-button type="danger" icon="el-icon-delete" circle></el-button>
+            <el-button plain type="primary" icon="el-icon-edit" circle></el-button>
+            <el-button plain type="danger" icon="el-icon-delete" circle></el-button>
           </template>
         </el-table-column>
       </el-table>
       <!-- 分页 -->
-      <el-pagination style="margin-top:20px" background layout="prev, pager, next" :total="1000"></el-pagination>
+      <!-- total 指定总条数 -->
+      <!-- page-size 设置每一页显示多少条，默认是10条 -->
+      <!-- current-page 指定当前是第几页 -->
+      <!-- current-change 是事件  pager 是函数 -->
+      <el-pagination
+        :page-size="filterData.per_page"
+        style="margin-top:20px"
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :current-page="filterData.page"
+        @current-change="pager"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -80,6 +103,7 @@ export default {
   name: "app-article",
   data() {
     return {
+      total: 0,
       articles: [],
       // 声明筛选条件数据，筛选条件数据提交给后台，数据的字段名称，由后台接口决定。
       // 筛选数据是由多个表单元素组成，需要收集所有数据，应该使用对象来进行绑定
@@ -89,7 +113,7 @@ export default {
         channel_id: null,
         begin_pubdate: null,
         end_pubdate: null,
-        page: 1,
+        page: 3,
         per_page: 20
       },
       // 频道下拉选项数据
@@ -103,6 +127,40 @@ export default {
     this.getChannelOptions(), this.getArticles();
   },
   methods: {
+    // 频道改变后
+    changeChannel() {
+      if (this.filterData.channel_id === "") {
+        this.filterData.channel_id = null;
+      }
+    },
+    // 筛选逻辑
+    search() {
+      this.filterData.page = 1;
+      this.getArticles();
+    },
+    // 选择日期范围
+    changeDate(dateArr) {
+      // 默认参数 dateArr [起始日期,结束日期]  日期默认是Date类型
+      // 但是后台需要的数据 字符串类型  例如：2010-01-01
+      // 赋值之前：对dateArr中的日期进行格式的转换
+      // 文档：可受 value-format 控制，通过这个数据指定组件产生的日期格式 yyyy-MM-dd
+      // 当使用组件的 清空功能，也会触发changeDate函数，改变成null === dateArr
+      // console.log(dateArr);
+      if (dateArr) {
+        this.filterData.begin_pubdate = dateArr[0];
+        this.filterData.end_pubdate = dateArr[1];
+      } else {
+        this.filterData.begin_pubdate = null;
+        this.filterData.end_pubdate = null;
+      }
+    },
+    // 分页切换
+    pager(newPage) {
+      // console.log(newPage);
+      // 修改参数
+      this.filterData.page = newPage;
+      this.getArticles();
+    },
     async getChannelOptions() {
       const res = await this.$http.get("channels");
       // console.log(res);
@@ -114,6 +172,8 @@ export default {
       const res = await this.$http.get("articles", { params: this.filterData });
       // console.log(res);
       this.articles = res.data.data.results;
+      // 设置总条数
+      this.total = res.data.data.total_count;
     }
   }
 };
