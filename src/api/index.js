@@ -1,21 +1,35 @@
 import axios from 'axios'
 import auth from '@/utils/auth.js'
 import router from '@/router'
+import JSONBIGINT from 'json-bigint'
 // 基准地址配置
 axios.defaults.baseURL = 'http://ttapi.research.itcast.cn/mp/v1_0/'
 // 请求头token配置
 // axios.defaults.headers.Authorization = `Bearer ${auth.getUser().token}`
-// 添加请求拦截器
-axios.interceptors.request.use(function (config) {
-  // 在发送请求之前做些什么
-  // 获取本地的token，如果有token咱们就追加即可
-  const user = auth.getUser()
-  if (user.token) config.headers.Authorization = `Bearer ${user.token}`
-  return config;
-}, function (error) {
-  // 对请求错误做些什么
-  return Promise.reject(error);
-});
+// `transformResponse` 在传递给 then/catch 前，允许修改响应数据
+axios.defaults.transformResponse = [function (data) {
+  // 对 data 进行任意转换处理
+  // 进行格式转换 data有可能个不是json格式  极端情况
+  // return JSONBINGINT.parse(data) 可能会报错
+  try {
+    // 正常转换
+    return JSONBIGINT.parse(data)
+  } catch (e) {
+    // 转换异常，还是使用原始数据
+    return (data)
+  }
+}],
+  // 添加请求拦截器
+  axios.interceptors.request.use(function (config) {
+    // 在发送请求之前做些什么
+    // 获取本地的token，如果有token咱们就追加即可
+    const user = auth.getUser()
+    if (user.token) config.headers.Authorization = `Bearer ${user.token}`
+    return config;
+  }, function (error) {
+    // 对请求错误做些什么
+    return Promise.reject(error);
+  });
 
 // 添加响应拦截器
 axios.interceptors.response.use(function (response) {

@@ -74,8 +74,14 @@
         </el-table-column>
         <el-table-column prop="pubdate" label="发布时间"></el-table-column>
         <el-table-column label="操作" width="120px">
-          <template>
-            <el-button plain type="primary" icon="el-icon-edit" circle></el-button>
+          <template slot-scope="scope">
+            <el-button
+              @click="toEditArticle(scope.row.id)"
+              plain
+              type="primary"
+              icon="el-icon-edit"
+              circle
+            ></el-button>
             <el-button plain type="danger" icon="el-icon-delete" circle></el-button>
           </template>
         </el-table-column>
@@ -127,6 +133,10 @@ export default {
     this.getChannelOptions(), this.getArticles();
   },
   methods: {
+    // 编辑跳转
+    toEditArticle(id) {
+      this.$router.push(`/publish?id=${id}`);
+    },
     // 频道改变后
     changeChannel() {
       if (this.filterData.channel_id === "") {
