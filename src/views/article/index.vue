@@ -18,27 +18,16 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="频道：">
-          <!-- label 选项文字  value 选项的值 当你选择某个选项后，该选项的值提供v-model -->
-          <el-select
-            clearable
-            @change="changeChannel"
-            v-model="filterData.channel_id"
-            placeholder="请选择"
-          >
-            <el-option
-              v-for="item in channelOptions"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <!-- 自定义封装的组件 频道 -->
+          <!-- <my-channel v-model="filterData.channel_id"></my-channel> -->
+          <my-channel :value="filterData.channel_id" @input="filterData.channel_id=$event"></my-channel>
         </el-form-item>
         <el-form-item label="日期：">
           <el-date-picker
             @change="changeDate"
             value-format="yyyy-MM-dd"
             v-model="dateArr"
-            type="daterange" 
+            type="daterange"
             range-separator="至"
             start-placeholder="开始日期"
             end-placeholder="结束日期"
@@ -136,7 +125,7 @@ export default {
     };
   },
   created() {
-    this.getChannelOptions(), this.getArticles();
+    this.getArticles();
   },
   methods: {
     // 删除-- 确认框
@@ -145,7 +134,8 @@ export default {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(async () => {
+      })
+        .then(async () => {
           try {
             await this.$http.delete(`articles/${id}`);
             this.$message.success("删除成功!");
@@ -153,18 +143,14 @@ export default {
           } catch (e) {
             this.$message.error("删除失败");
           }
-        }).catch(() => {});
+        })
+        .catch(() => {});
     },
     // 编辑跳转
     toEditArticle(id) {
       this.$router.push(`/publish?id=${id}`);
     },
-    // 频道改变后
-    changeChannel() {
-      if (this.filterData.channel_id === "") {
-        this.filterData.channel_id = null;
-      }
-    },
+
     // 筛选逻辑
     search() {
       this.filterData.page = 1;
@@ -193,11 +179,7 @@ export default {
       this.filterData.page = newPage;
       this.getArticles();
     },
-    async getChannelOptions() {
-      const res = await this.$http.get("channels");
-      // console.log(res);
-      this.channelOptions = res.data.data.channels;
-    },
+
     async getArticles() {
       // post('地址','请求体数据')
       // 如果是get请求，如何传递参数对象 get('地址',{params:'get对象参数'})

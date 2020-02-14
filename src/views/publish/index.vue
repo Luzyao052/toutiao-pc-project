@@ -10,7 +10,9 @@
         </el-form-item>
         <el-form-item label="内容：">富文本</el-form-item>
         <el-form-item label="封面：">封面组件</el-form-item>
-        <el-form-item label="频道：">频道组件</el-form-item>
+        <el-form-item label="频道：">
+          <my-channel v-model="articleForm.channel_id"></my-channel>
+        </el-form-item>
         <el-form-item></el-form-item>
       </el-form>
     </el-card>
@@ -19,12 +21,13 @@
 
 <script>
 export default {
-  name: 'my-publish',
+  name: 'app-publish',
   data() {
     return {
       articleForm:{
         // 文章数据
-        title: ''
+        title: '',
+        channel_id: null
       }
     }
   }
