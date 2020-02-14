@@ -11,7 +11,7 @@
           <el-radio-button :label="false">全部</el-radio-button>
           <el-radio-button :label="true">收藏</el-radio-button>
         </el-radio-group>
-        <el-button style="float:right" type="success" size="small">成功按钮</el-button>
+        <el-button @click="openDialog()" style="float:right" type="success" size="small">添加素材</el-button>
       </div>
       <!-- 列表 -->
       <div class="img-list">
@@ -37,10 +37,33 @@
         :page-size="reqParams.per_page"
       ></el-pagination>
     </el-card>
+    <el-dialog title="添加素材" :visible.sync="dialogVisible" width="30%">
+      <!-- el-upload 上传组件容器 -->
+      <!-- class="avatar-uploader" 需要，而且需要对应样式 -->
+      <!-- action="上传地址" 图片上传是组件自己发请求，不会使用axios-->
+      <!-- 不会自动携带token，需要自己来设置请求头，携带token -->
+      <!-- :show-file-list="false" 不需要显示选择的文件列表 -->
+      <!-- :on-success="handleSuccess" 成功的回调函数 -->
+      <!-- :before-upload="beforeAvatarUpload" 上传前的回调函数 -->
+      <!-- name="file" 提交给后台图片数据的字段名称  需要和上传接口的字段名称统一-->
+      <!-- headers 属性，对象 -->
+      <el-upload
+        class="avatar-uploader"
+        name="image"
+        action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+        :show-file-list="false"
+        :on-success="handleSuccess"
+        :headers="uploadHeaders"
+      >
+        <img v-if="imageUrl" :src="imageUrl" class="avatar" />
+        <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+      </el-upload>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+import auth from "@/utils/auth.js";
 export default {
   name: "app-image",
   data() {
@@ -53,29 +76,60 @@ export default {
       // 素材列表
       images: [],
       //总条数
-      total: 0
+      total: 0,
+      dialogVisible: false,
+      //上传图片
+      imageUrl: "",
+      // 得自行设置请求头，拿到token
+      uploadHeaders: {
+        Authorization: `Bearer ${auth.getUser().token}`
+      }
     };
   },
   created() {
     this.getImages();
   },
   methods: {
+    // 上传成功
+    handleSuccess(res, file, fileList) {
+      // console.log(res);
+      // console.log(file);
+      // console.log(fileList);
+      // 提示 + 预览
+      this.$message.success("上传成功");
+      this.imageUrl = res.data.url;
+      // 关闭对话框 + 更新当前列表
+      window.setTimeout(() => {
+        this.dialogVisible = false;
+        this.getImages();
+      }, 3000);
+    },
+    //显示对话框
+    openDialog() {
+      // 1. 准备一个对话框
+      // 2. 再来打开对话框
+      this.dialogVisible = true;
+      // 清空预览图
+      this.imageUrl = null
+    },
     //删除素材-- 确认框
-    async delImage(id) {  
+    async delImage(id) {
       this.$confirm("是否要删除该篇文章?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      }).then(async () => {
-        //删除请求
+      })
+        .then(async () => {
+          //删除请求
           try {
-            await this.$http.delete(`user/images/${id}`)
+            await this.$http.delete(`user/images/${id}`);
             this.$message.success("删除成功!");
-            this.getImages()
+            this.getImages();
           } catch (e) {
             this.$message.error("删除失败");
           }
-        }).catch(() => {});
+        })
+        .catch(() => {});
     },
     //添加收藏和取消收藏
     async toggleStatus(item) {

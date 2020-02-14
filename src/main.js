@@ -7,6 +7,7 @@ import router from '@/router';
 
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+import '@/styles/index.css'
 // 使用自己封装的插件
 import plugin from '@/plugin.js'
 Vue.use(plugin)
