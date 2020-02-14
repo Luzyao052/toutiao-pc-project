@@ -24,7 +24,13 @@
         </div>
       </div>
       <!-- 分页 -->
-      <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination>
+      <el-pagination 
+      @current-change="pager" 
+      background layout="prev, pager, next" 
+      :total="total"
+      :current-page="reqParams.page"
+      :page-size="reqParams.per_page"
+      ></el-pagination>
     </el-card>
   </div>
 </template>
@@ -40,19 +46,30 @@ export default {
         per_page: 10
       },
       // 素材列表
-      images: []
+      images: [],
+      //总条数
+      total: 0
     };
   },
   created() {
-    this.getImages();
+    this.getImages(),
+    this.pager()
   },
   methods: {
+    //切换分页
+    async pager(newPage) {
+      // console.log(newPage);
+      this.reqParams.page = newPage
+      this.getImages()
+    },
+    //获取列表
     async getImages() {
       const res = await this.$http.get("user/images", {
         params: this.reqParams
       });
       // console.log(res);
       this.images = res.data.data.results;
+      this.total = res.data.data.total_count;
     }
   }
 };
