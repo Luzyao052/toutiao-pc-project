@@ -23,7 +23,7 @@
               class="el-icon-star-off"
               :class="{red : item.is_collected}"
             ></span>
-            <span class="el-icon-delete"></span>
+            <span @click="delImage(item.id)" class="el-icon-delete"></span>
           </div>
         </div>
       </div>
@@ -60,6 +60,23 @@ export default {
     this.getImages();
   },
   methods: {
+    //删除素材-- 确认框
+    async delImage(id) {  
+      this.$confirm("是否要删除该篇文章?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }).then(async () => {
+        //删除请求
+          try {
+            await this.$http.delete(`user/images/${id}`)
+            this.$message.success("删除成功!");
+            this.getImages()
+          } catch (e) {
+            this.$message.error("删除失败");
+          }
+        }).catch(() => {});
+    },
     //添加收藏和取消收藏
     async toggleStatus(item) {
       try {

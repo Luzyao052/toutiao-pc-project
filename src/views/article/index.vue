@@ -139,14 +139,13 @@ export default {
     this.getChannelOptions(), this.getArticles();
   },
   methods: {
-    // 删除
+    // 删除-- 确认框
     delArticle(id) {
       this.$confirm("是否要删除该篇文章?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
-      })
-        .then(async () => {
+      }).then(async () => {
           try {
             await this.$http.delete(`articles/${id}`);
             this.$message.success("删除成功!");
@@ -154,8 +153,7 @@ export default {
           } catch (e) {
             this.$message.error("删除失败");
           }
-        })
-        .catch(() => {});
+        }).catch(() => {});
     },
     // 编辑跳转
     toEditArticle(id) {
