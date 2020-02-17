@@ -2,7 +2,7 @@
   <div class="my-image">
     <!-- 图片按钮 -->
     <div class="img-btn" @click="openDialog()">
-      <img src="../assets/imgs/default.png" alt />
+      <img :src="value||defaultImageUrl" alt />
     </div>
     <!-- 对话框 -->
     <el-dialog title="提示" :visible.sync="dialogVisible" width="730px">
@@ -38,19 +38,35 @@
             ></el-pagination>
           </div>
         </el-tab-pane>
-        <el-tab-pane label="本地上传" name="upload">2</el-tab-pane>
+        <el-tab-pane label="本地上传" name="upload">
+          <el-upload
+            class="avatar-uploader"
+            name="image"
+            action="http://ttapi.research.itcast.cn/mp/v1_0/user/images"
+            :show-file-list="false"
+            :on-success="handleSuccess"
+            :headers="uploadHeaders"
+          >
+            <img v-if="UploadImageUrl" :src="UploadImageUrl" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
+        </el-tab-pane>
       </el-tabs>
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="confirmImage()">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
+import auth from "@/utils/auth.js";
+// 主动导入 使用这种方法可以解决动态绑定图片时，默认图片不显示的问题
+import defaultImg from "@/assets/imgs/default.png";
 export default {
   name: "my-image",
+  props: ["value"],
   data() {
     return {
       dialogVisible: false,
@@ -66,10 +82,44 @@ export default {
       // 加载
       isLoading: false,
       // 当前选中的素材图片地址
-      selectedImageUrl: null
+      selectedImageUrl: null,
+      // 上传图片请求头
+      uploadHeaders: {
+        Authorization: `Bearer ${auth.getUser().token}`
+      },
+      // 上传素材图片地址
+      UploadImageUrl: null,
+      // 默认图片地址
+      defaultImageUrl: defaultImg
     };
   },
   methods: {
+    // 确定图片
+    confirmImage() {
+      // 如何判断此时是激活的  素材库还是上传图片
+      if (this.activeName === "list") {
+        // 素材库
+        if (!this.selectedImageUrl)
+          return this.$message.warning("最少选择一张照片");
+        // this.defaultImageUrl = this.selectedImageUrl;
+        // 传给父元素
+        this.$emit('input',this.selectedImageUrl)
+      } else {
+        // 上传
+        if (!this.UploadImageUrl)
+          return this.$message.warning("请上传一张素材图片");
+        // this.defaultImageUrl = this.UploadImageUrl;
+        // 传给父元素
+        this.$emit('input',this.UploadImageUrl)
+      }
+      // 关闭对话框
+      this.dialogVisible = false;
+    },
+    // 上传图片成功函数
+    handleSuccess(res) {
+      // 预览
+      this.UploadImageUrl = res.data.url;
+    },
     // 选中图片
     selectedImage(url) {
       this.selectedImageUrl = url;
@@ -82,6 +132,11 @@ export default {
     openDialog() {
       this.dialogVisible = true;
       this.getImages();
+      // 重置数据
+      // 默认激活第一个选项卡
+      this.activeName = "list";
+      this.selectedImageUrl = null;
+      this.UploadImageUrl = null;
     },
     //获取列表
     async getImages() {
