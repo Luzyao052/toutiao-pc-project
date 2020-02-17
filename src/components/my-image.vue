@@ -16,7 +16,13 @@
             </el-radio-group>
             <!-- 列表 -->
             <div class="img-list">
-              <div class="img-item" v-for="item in images" :key="item.id">
+              <div
+                @click="selectedImage(item.url)"
+                class="img-item"
+                :class="{selected:selectedImageUrl===item.url}"
+                v-for="item in images"
+                :key="item.id"
+              >
                 <img :src="item.url" alt />
               </div>
             </div>
@@ -58,10 +64,16 @@ export default {
       total: 0,
       images: [],
       // 加载
-      isLoading: false
+      isLoading: false,
+      // 当前选中的素材图片地址
+      selectedImageUrl: null
     };
   },
   methods: {
+    // 选中图片
+    selectedImage(url) {
+      this.selectedImageUrl = url;
+    },
     // 切换全部与收藏
     changeCollect() {
       this.reqParams.page = 1;
@@ -74,13 +86,13 @@ export default {
     //获取列表
     async getImages() {
       // 开始加载
-      this.isLoading = true
+      this.isLoading = true;
       const res = await this.$http.get("user/images", {
         params: this.reqParams
       });
       // console.log(res);
       // 加载完成
-      this.isLoading = false
+      this.isLoading = false;
       this.images = res.data.data.results;
       this.total = res.data.data.total_count;
     },
@@ -119,10 +131,27 @@ export default {
       border: 1px dashed #ddd;
       display: inline-block;
       margin-right: 20px;
+      position: relative;
       img {
         width: 100%;
         height: 100%;
         display: block;
+      }
+      &.selected::after {
+        // .img-item 的后伪元素
+        // &符号 less语法，连接符，连接 上一级选择和当前的选择器。
+        // 此时不加&：.img-item ::after{}  解析后：后代选择器
+        // 加上&符后：.img-item::after{}   解析后：交集选择器
+        // .img-item.selected::after{} 满足这个选择器样式生效
+        // 当你想选中效果：给.img-item加上selected类即可。
+        content: "";
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.3) url(../assets/imgs/selected.png)
+          no-repeat center / 50px auto;
       }
     }
   }
