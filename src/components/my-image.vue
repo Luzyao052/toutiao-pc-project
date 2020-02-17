@@ -8,16 +8,28 @@
     <el-dialog title="提示" :visible.sync="dialogVisible" width="730px">
       <el-tabs v-model="activeName" type="card">
         <el-tab-pane label="素材库" name="list">
-          <!-- 按钮 -->
-          <el-radio-group v-model="reqParams.collect">
-            <el-radio-button :label="false">全部</el-radio-button>
-            <el-radio-button :label="true">收藏</el-radio-button>
-          </el-radio-group>
-          <!-- 列表 -->
-          <div class="img-list">
-            <div class="img-item" v-for="i in 8" :key="i">
-              <img src="../assets/imgs/avatar.jpg" alt />
+          <div v-loading="isLoading">
+            <!-- 按钮 -->
+            <el-radio-group v-model="reqParams.collect" @change="changeCollect">
+              <el-radio-button :label="false">全部</el-radio-button>
+              <el-radio-button :label="true">收藏</el-radio-button>
+            </el-radio-group>
+            <!-- 列表 -->
+            <div class="img-list">
+              <div class="img-item" v-for="item in images" :key="item.id">
+                <img :src="item.url" alt />
+              </div>
             </div>
+            <!-- 分页 -->
+            <el-pagination
+              background
+              layout="prev, pager, next"
+              :total="total"
+              :page-size="this.reqParams.per_page"
+              :current-page="this.reqParams.page"
+              @current-change="pager"
+              hide-on-single-page
+            ></el-pagination>
           </div>
         </el-tab-pane>
         <el-tab-pane label="本地上传" name="upload">2</el-tab-pane>
@@ -42,12 +54,41 @@ export default {
         collect: false,
         page: 1,
         per_page: 8
-      }
+      },
+      total: 0,
+      images: [],
+      // 加载
+      isLoading: false
     };
   },
   methods: {
+    // 切换全部与收藏
+    changeCollect() {
+      this.reqParams.page = 1;
+      this.getImages();
+    },
     openDialog() {
       this.dialogVisible = true;
+      this.getImages();
+    },
+    //获取列表
+    async getImages() {
+      // 开始加载
+      this.isLoading = true
+      const res = await this.$http.get("user/images", {
+        params: this.reqParams
+      });
+      // console.log(res);
+      // 加载完成
+      this.isLoading = false
+      this.images = res.data.data.results;
+      this.total = res.data.data.total_count;
+    },
+    //切换分页
+    pager(newPage) {
+      // console.log(newPage);
+      this.reqParams.page = newPage;
+      this.getImages();
     }
   }
 };
