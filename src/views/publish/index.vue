@@ -31,7 +31,10 @@
         <el-form-item label="频道：">
           <my-channel v-model="articleForm.channel_id"></my-channel>
         </el-form-item>
-        <el-form-item></el-form-item>
+        <el-form-item>
+          <el-button @click="submit(false)" type="primary">发布文章</el-button>
+          <el-button @click="submit(true)">存入草稿</el-button>
+        </el-form-item>
       </el-form>
     </el-card>
   </div>
@@ -78,6 +81,18 @@ export default {
         }
       }
     };
+  },
+  methods: {
+    // 添加文章 draft===false 发布文章  draft===true  存入草稿
+    async submit(draft) {
+      try {
+        await this.$http.post(`articles?draft=${draft}`, this.articleForm);
+        this.$message.success(draft ? "存入草稿成功" : "发布文章成功");
+        this.$router.push("/article");
+      } catch (e) {
+        this.$message.error("操作失败");
+      }
+    }
   }
 };
 </script>
