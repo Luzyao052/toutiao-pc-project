@@ -11,6 +11,7 @@ import NotFound from '@/views/404'
 import Article from '@/views/article'
 import Image from '@/views/image'
 import Publish from '@/views/publish'
+import Comment from '@/views/comment'
 
 const router = new VueRouter({
   routes: [
@@ -22,7 +23,8 @@ const router = new VueRouter({
         { path: '/', component: Welcome },
         { path: '/article', component: Article },
         { path: '/image', component: Image },
-        { path: '/publish', component: Publish }
+        { path: '/publish', component: Publish },
+        { path: '/comment', component: Comment }
       ]
     },
     // 通配规则（以上所有的规则不符合的时候，走这个规则）
