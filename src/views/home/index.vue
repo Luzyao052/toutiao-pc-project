@@ -73,6 +73,7 @@
 
 <script>
 import auth from '@/utils/auth.js'
+import eventBus from '@/eventBus.js';
 export default {
   name: "app-home",
   data() {
@@ -85,6 +86,10 @@ export default {
   created () {
     this.name = auth.getUser().name
     this.photo = auth.getUser().photo
+    // 同步
+    eventBus.$on('updateUserName',(data)=>{
+      this.name = data
+    })
   },
   methods: {
     toggleMenu() {
