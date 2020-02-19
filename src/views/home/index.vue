@@ -46,7 +46,11 @@
     </el-aside>
     <el-container>
       <el-header class="my-header">
-        <span @click="toggleMenu()" class="icon" :class="isOpen? 'el-icon-s-fold':'el-icon-s-unfold'"></span>
+        <span
+          @click="toggleMenu()"
+          class="icon"
+          :class="isOpen? 'el-icon-s-fold':'el-icon-s-unfold'"
+        ></span>
         <span class="text">头条新闻,你感兴趣的头条</span>
         <!-- 头部下拉  element-UI -->
         <el-dropdown class="my-dropdown" @command="handleClick">
@@ -72,34 +76,37 @@
 </template>
 
 <script>
-import auth from '@/utils/auth.js'
-import eventBus from '@/eventBus.js';
+import auth from "@/utils/auth.js";
+import eventBus from "@/eventBus.js";
 export default {
   name: "app-home",
   data() {
     return {
       isOpen: true,
-      name : '',
-      photo : ''
+      name: "",
+      photo: ""
     };
   },
-  created () {
-    this.name = auth.getUser().name
-    this.photo = auth.getUser().photo
+  created() {
+    this.name = auth.getUser().name;
+    this.photo = auth.getUser().photo;
     // 同步
-    eventBus.$on('updateUserName',(data)=>{
-      this.name = data
-    })
+    eventBus.$on("updateUserName", data => {
+      this.name = data;
+    });
+    eventBus.$on("updateUserPhoto", photo => {
+      this.photo = photo;
+    });
   },
   methods: {
     toggleMenu() {
       this.isOpen = !this.isOpen;
     },
     handleClick(command) {
-      if(command === 'setting') return this.$router.push('/setting')
-      if(command === 'logout')  {
-        auth.delUser()
-        this.$router.push('/login')
+      if (command === "setting") return this.$router.push("/setting");
+      if (command === "logout") {
+        auth.delUser();
+        this.$router.push("/login");
       }
     }
   }
