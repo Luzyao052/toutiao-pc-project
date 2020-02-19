@@ -13,6 +13,7 @@ import Image from '@/views/image'
 import Publish from '@/views/publish'
 import Comment from '@/views/comment'
 import Fans from '@/views/fans'
+import Setting from '@/views/setting'
 
 const router = new VueRouter({
   routes: [
@@ -27,6 +28,7 @@ const router = new VueRouter({
         { path: '/publish', component: Publish },
         { path: '/comment', component: Comment },
         { path: '/fans', component: Fans },
+        { path: '/setting', component: Setting }
       ]
     },
     // 通配规则（以上所有的规则不符合的时候，走这个规则）
