@@ -4,16 +4,16 @@ Vue.use(VueRouter)
 
 //导入
 import auth from '@/utils/auth.js';
-import Login from '@/views/login'
-import Home from '@/views/home'
-import Welcome from '@/views/welcome'
-import NotFound from '@/views/404'
-import Article from '@/views/article'
-import Image from '@/views/image'
-import Publish from '@/views/publish'
-import Comment from '@/views/comment'
-import Fans from '@/views/fans'
-import Setting from '@/views/setting'
+const Login = () => import('@/views/login')
+const Home = () => import('@/views/home')
+const Welcome = () => import('@/views/welcome')
+const NotFound = () => import('@/views/404')
+const Article = () => import('@/views/article')
+const Image = () => import('@/views/image')
+const Publish = () => import('@/views/publish')
+const Comment = () => import('@/views/comment')
+const Fans = () => import('@/views/fans')
+const Setting = () => import('@/views/setting')
 
 const router = new VueRouter({
   routes: [
